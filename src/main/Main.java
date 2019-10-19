@@ -3,128 +3,181 @@ package main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-import graphics.MatUtils;
+import graphics.Camera;
+import graphics.DepthBuffer;
+import graphics.MathUtils;
 import graphics.Mesh;
-import graphics.SimpleGameEngine;
-import graphics.TriToRasterThread;
-import graphics.Triangle;
+import graphics.RenderingPipeline;
+import graphics.SimpleEngine;
 import graphics.Vect3D;
-
 
 public class Main
 {
-	/* Final(ish) */
+	private short width = 1280;
+	private short height = 720;
+	private String title = "3D Engine Attempt No. 100";
+	private boolean fpsLock = false;
+	private short fpsCap = 60;
+	private boolean showFps = true;
+	private boolean fullscreen = false;
 	
-	private short WIDTH = 1280;
-	private short HEIGHT = 720;
-	private String TITLE = "3D Engine";
-	private short FPSCAP = 60;
-	private final byte N_THREAD = 4;
+	private final static byte N_THREAD = 1;
 	
-	float[][] mProj = MatUtils.projMat(90, HEIGHT * 1f / WIDTH, 0.1f, 1000f);
-	Vect3D vUp = new Vect3D(0f, 1f, 0f);
-	Vect3D vPlaneP = new Vect3D(0f, 0f, 0.001f);
-	Vect3D vPlaneN = new Vect3D(0f, 0f, 1f);
-	Vect3D vOffsetView = new Vect3D(1f, 1f, 0f);
+	private float[][] mProj = MathUtils.projMat(90, height * 1f / width, 0.1f, 1000f);
 	
-	TriToRasterThread[] ttrt = new TriToRasterThread[N_THREAD];
+	private final Camera defaultCamera = new Camera(0f, 0f, -4f);
+	private Camera camera = defaultCamera.clone();
 	
-	/**************/
+	private DepthBuffer db = new DepthBuffer(width, height);
 	
-	private Mesh[] mesh = new Mesh[100];
+	private ArrayList<Mesh> meshes = new ArrayList<Mesh>();
 	
-	Vect3D vCamera = new Vect3D(0f, 2f, -5f);
-	Vect3D vLookDir = new Vect3D(0f, 0f, 1f);
-	Vect3D vLight = MatUtils.normVec(new Vect3D(0f, 1f, -1f));
+	private Vect3D vLight = MathUtils.normVec(new Vect3D(1f, 1f, -1f));
+
+	private final float movMult = 5f;
+	private final float rotMult = 2f;
 	
-	float xaw = 0f;
-	float yaw = 0f;
-	
-	float speedMult = 5f;
-	
-	Color bgrColor = Color.BLACK;
-	boolean showDebug = false;
+	private Color bgrColor = new Color(0, 191, 255);
+	private boolean showDebug = false;
 	
 	public Main() throws Exception
 	{
-		mesh[0] = new Mesh("meshes//teapot.obj", Color.WHITE);
+		Mesh mesh0 = new Mesh("meshes//texturedCube.obj", true, Color.WHITE, "textures//player0.png");
+		//Mesh mesh0 = new Mesh("meshes//cube.obj", false, Color.WHITE, null);
+		//mesh0.setupPosition(0, 0, 0, 0, (float)(Math.PI / 2), (float)(Math.PI / 2));
 		
-		//mesh[0].translate(0, 4, 0);
-	//	mesh[1] = new Mesh("meshes//pumpkin.obj", new Color(255, 140, 0));
-		
-		//mesh[1].rotate(- MatUtils.PI / 2, 0, 0);
-		//mesh[1].translate(0, 100, 100);
-		
-		new SimpleGameEngine(WIDTH, HEIGHT, TITLE, FPSCAP)
+		meshes.add(mesh0);
+
+		new SimpleEngine(width, height, title, fpsLock, fpsCap, showFps, fullscreen)
 		{
 			public void update()
 			{
-				if(!escapeKey())
-				{
-					if(toggle(f1Key()))
-						showDebug = !showDebug;
-					
-					if(toggle(f3Key()))
-						setFPSLock(!getFPSLock());
-					
-					float elapsedTime = getElapsedTime() / 1000000000f;
-
-					if(np4Key() && !np6Key())
-						mesh[0].rotate(0f, - MatUtils.PI  * elapsedTime, 0f);
-					if(np6Key() && !np4Key())
-						mesh[0].rotate(0f, MatUtils.PI * elapsedTime, 0f);
-					if(np2Key() && !np8Key())
-						mesh[0].rotate(- MatUtils.PI * elapsedTime, 0f, 0f);
-					if(np8Key() && !np2Key())
-						mesh[0].rotate(MatUtils.PI * elapsedTime, 0f, 0f);
-					if(np7Key() && !np9Key())
-						mesh[0].rotate(0f, 0f, - MatUtils.PI * elapsedTime);
-					if(np9Key() && !np7Key())
-						mesh[0].rotate(0f, 0f, MatUtils.PI * elapsedTime);					
-					
-					float[][] mLightRot = MatUtils.yRotMat(1f * elapsedTime);
-					vLight = MatUtils.normVec(MatUtils.mulVecMat(vLight, mLightRot));
-					
-					Vect3D vForward = MatUtils.mulVec(vLookDir, speedMult * elapsedTime);
-					Vect3D vRight   = MatUtils.mulVec(MatUtils.normVec(MatUtils.crossProd(vLookDir, vUp)), speedMult * elapsedTime);
-					Vect3D vUp1     = MatUtils.mulVec(vUp, speedMult * elapsedTime);
-					
-					if(wKey() && !sKey())
-						vCamera = MatUtils.addVec(vCamera, vForward);
-					if(sKey() && !wKey())
-						vCamera = MatUtils.subVec(vCamera, vForward);
-					if(aKey() && !dKey())
-						vCamera = MatUtils.subVec(vCamera, vRight);
-					if(dKey() && !aKey())
-						vCamera = MatUtils.addVec(vCamera, vRight);
-					if(eKey() && !xKey())
-						vCamera = MatUtils.addVec(vCamera, vUp1);
-					if(xKey() && !eKey())
-						vCamera = MatUtils.subVec(vCamera, vUp1);
-					
-					if(upKey())
-					{
-						xaw -= 1f * elapsedTime;
-						if(xaw < - MatUtils.PI / 2)
-							xaw = - MatUtils.PI / 2 + 0.001f;
-					}
-					if(downKey())
-					{
-						xaw += 1f * elapsedTime;
-						if(xaw > MatUtils.PI / 2)
-							xaw = MatUtils.PI / 2 - 0.001f;
-					}
-					if(leftKey())
-						yaw += 1f * elapsedTime;
-					if(rightKey())
-						yaw -= 1f * elapsedTime;
-					yaw = yaw > MatUtils.PI * 2 ? yaw - MatUtils.PI * 2 : yaw;
-					yaw = yaw < - MatUtils.PI * 2 ? yaw + MatUtils.PI * 2 : yaw;
-				}
-				else
+				if(key(KeyEvent.VK_ESCAPE))
 					stop();
+				
+				float elapsedTime = getElapsedTime() / 1000000000f;
+				
+				// MISC ////////////////////////////////////////////////
+				
+				if(keyToggle(KeyEvent.VK_F1)) // switch debug view
+					showDebug = !showDebug;
+				
+				if(keyToggle(KeyEvent.VK_F2)) // switch fps lock
+					setFPSLock(!getFPSLock());				
+				
+				if(keyToggle(KeyEvent.VK_F3)) // switch fullscreen
+				{
+					setSize(width, height, !getFullscreen());
+					mProj = MathUtils.projMat(90, getHeight() * 1f / getWidth(), 0.1f, 1000f);
+					db = new DepthBuffer(getWidth(), getHeight());
+				}
+				
+				if(keyToggle(KeyEvent.VK_F4)) // set random color for mesh0
+				{
+					int red = (int)(Math.random() * 255);
+					int green = (int)(Math.random() * 255);
+					int blue = (int)(Math.random() * 255);
+					
+					mesh0.setColor(new Color(red, green, blue));
+				}
+				
+				if(keyToggle(KeyEvent.VK_F5)) // set random light direction
+					vLight = MathUtils.normVec(new Vect3D((float)(Math.random() * 2 - 1), (float)(Math.random() * 2 - 1), (float)(Math.random() * 2 - 1)));
+				
+				
+				if(keyToggle(KeyEvent.VK_R)) // reset camera
+					camera = defaultCamera.clone();
+				
+				////////////////////////////////////////////////////////
+				
+				// SHUTTLE /////////////////////////////////////////////
+				
+				float deltaPitchShuttle = 0f;
+				float deltaYawShuttle = 0f;
+				float deltaRollShuttle = 0f;
+				
+				if(key(KeyEvent.VK_NUMPAD8))
+					deltaPitchShuttle = - elapsedTime;
+				if(key(KeyEvent.VK_NUMPAD2))
+					deltaPitchShuttle = elapsedTime;
+				if(key(KeyEvent.VK_NUMPAD7))
+					deltaYawShuttle = elapsedTime;
+				if(key(KeyEvent.VK_NUMPAD9))
+					deltaYawShuttle = - elapsedTime;
+				if(key(KeyEvent.VK_NUMPAD4))
+					deltaRollShuttle = - elapsedTime;
+				if(key(KeyEvent.VK_NUMPAD6))
+					deltaRollShuttle = elapsedTime;
+				
+				mesh0.rotate(deltaPitchShuttle, deltaYawShuttle, deltaRollShuttle);
+				
+				
+				float deltaLeftShuttle = 0;
+				float deltaUpShuttle = 0;
+				float deltaForwardShuttle = 0;
+				
+				if(key(KeyEvent.VK_I))
+					deltaForwardShuttle = movMult * elapsedTime;
+				if(key(KeyEvent.VK_K))
+					deltaForwardShuttle = - movMult * elapsedTime;
+				if(key(KeyEvent.VK_J))
+					deltaLeftShuttle = movMult * elapsedTime;
+				if(key(KeyEvent.VK_L))
+					deltaLeftShuttle = - movMult * elapsedTime;
+				if(key(KeyEvent.VK_O))
+					deltaUpShuttle = movMult * elapsedTime;
+				if(key(KeyEvent.VK_COMMA))
+					deltaUpShuttle = - movMult * elapsedTime;
+				
+				mesh0.move(deltaLeftShuttle, deltaUpShuttle, deltaForwardShuttle);
+				
+				////////////////////////////////////////////////////////
+				
+				// CAMERA /////////////////////////////////////////////			
+				
+				float deltaPitch = 0;
+				float deltaYaw = 0;
+				float deltaRoll = 0;
+				
+				if(key(KeyEvent.VK_UP))
+					deltaPitch = - rotMult * elapsedTime;
+				if(key(KeyEvent.VK_DOWN))
+					deltaPitch = rotMult * elapsedTime;
+				if(key(KeyEvent.VK_LEFT))
+					deltaYaw = rotMult * elapsedTime;
+				if(key(KeyEvent.VK_RIGHT))
+					deltaYaw = - rotMult * elapsedTime;
+				if(key(KeyEvent.VK_SHIFT))
+					deltaRoll = - rotMult * elapsedTime;
+				if(key(KeyEvent.VK_NUMPAD1))
+					deltaRoll = rotMult * elapsedTime;
+				
+				camera.rotate(deltaPitch, deltaYaw, deltaRoll);
+				
+				
+				float deltaLeft = 0;
+				float deltaUp = 0;
+				float deltaForward = 0;
+				
+				if(key(KeyEvent.VK_W))
+					deltaForward = movMult * elapsedTime;
+				if(key(KeyEvent.VK_S))
+					deltaForward = - movMult * elapsedTime;
+				if(key(KeyEvent.VK_A))
+					deltaLeft = movMult * elapsedTime;
+				if(key(KeyEvent.VK_D))
+					deltaLeft = - movMult * elapsedTime;
+				if(key(KeyEvent.VK_E))
+					deltaUp = movMult * elapsedTime;
+				if(key(KeyEvent.VK_X))
+					deltaUp = - movMult * elapsedTime;
+				
+				camera.move(deltaLeft, deltaUp, deltaForward);
+				
+				////////////////////////////////////////////////////////
 			}
 			
 			public void render() throws InterruptedException
@@ -132,109 +185,65 @@ public class Main
 				Graphics g = getGraphics();
 				
 				g.setColor(bgrColor);
-				g.fillRect(0, 0, WIDTH, HEIGHT);
+				g.fillRect(0, 0, getWidth(), getHeight());
 				
-				Vect3D vTarget = new Vect3D(0f, 0f, 1f);
-				float[][] mCameraRot = MatUtils.mulMat(MatUtils.xRotMat(xaw), MatUtils.yRotMat(yaw));
-				vLookDir = MatUtils.mulVecMat(vTarget, mCameraRot);
-				vTarget = MatUtils.addVec(vCamera, vLookDir);
-				float[][] mCamera = MatUtils.pointAtMat(vCamera, vTarget, vUp);
-				float[][] mView = MatUtils.lookAtMat(mCamera);
+				////////////////////////////////////////////////////////
+			
+				db.reset();
 				
-				ArrayList<Triangle> vecTriToRaster = new ArrayList<Triangle>();				
-				
-				short k = -1;
+				/*ArrayList<Triangle> allTris = new ArrayList<Triangle>();
+				@SuppressWarnings("unchecked")
+				ArrayList<Triangle>[] subTris = new ArrayList[N_THREAD];
+				RenderingPipeline[] rp = new RenderingPipeline[N_THREAD];
+			
+				int k = -1;
 				while(mesh[++k] != null)
-				{
-					for(byte i = 0; i < N_THREAD; i++)
-						ttrt[i] = new TriToRasterThread(vPlaneP, vPlaneN, mProj, vOffsetView, WIDTH, HEIGHT);
-					
-					for(byte i = 0; i < N_THREAD; i++)
-						ttrt[i].setup(mesh[k].tris, i * mesh[k].tris.length / N_THREAD, (i + 1) * mesh[k].tris.length / N_THREAD, vCamera, vLight, mView);
-					
-					for(TriToRasterThread thread : ttrt)
-						thread.start();
-					
-					for(TriToRasterThread thread : ttrt)
-						thread.join();
-					
-					for(byte i = 0; i < N_THREAD; i++)
-						for(int j = 0; j < ttrt[i].getTrisCounter(); j++)
-							vecTriToRaster.add(ttrt[i].retTris[j]);
-				}
+					for(int i = 0; i < mesh[k].tris.length; i++)
+						allTris.add(mesh[k].tris[i]);
 				
-				vecTriToRaster.sort((o1, o2) ->
-				{
-					Triangle t1 = (Triangle) o1;
-					Triangle t2 = (Triangle) o2;
-					
-					float z1 = (t1.p[0].z + t1.p[1].z + t1.p[2].z) / 3f;
-					float z2 = (t2.p[0].z + t2.p[1].z + t2.p[2].z) / 3f;
-					
-					return z1 < z2 ? 1 : (z1 > z2 ? -1 : 0);
-				});				
+				for(int i = 0; i < N_THREAD; i++)
+					subTris[i] = new ArrayList<Triangle>();
 				
-				for(Triangle triToRaster : vecTriToRaster)
-				{
-					Triangle[] clipped = new Triangle[2];
-					ArrayList<Triangle> listTris = new ArrayList<Triangle>();
+				int nTris = allTris.size();
+				
+				for(int i = 0; i < N_THREAD; i++)
+					for(int j = nTris / N_THREAD * i; j < nTris / N_THREAD * (i + 1); j++)
+						subTris[i].add(allTris.get(j));
+				
+				if(nTris / N_THREAD != nTris * 1f / N_THREAD)
+					for(int i = nTris / N_THREAD * N_THREAD; i < nTris; i++)
+						subTris[N_THREAD - 1].add(allTris.get(i));
+				
+				
+				
+				for(int i = 0; i < N_THREAD; i++)
+					rp[i] = new RenderingPipeline(mesh0, getWidth(), getHeight(), mProj, camera, vLight, db, showDebug);
 					
-					listTris.add(triToRaster);
-					int nNewTris = 1;
-					
-					for(byte p = 0; p < 4; p++)
-					{
-						byte nTrisToAdd = 0;
-						while(nNewTris > 0)
-						{
-							Triangle test = listTris.get(0);
-							listTris.remove(0);
-							nNewTris--;
-							
-							switch(p)
-							{
-								case 0: clipped = MatUtils.clipAgainstPlane(new Vect3D(0f, 0f, 0f), new Vect3D(0f, 1f, 0f), test); break;
-								case 1: clipped = MatUtils.clipAgainstPlane(new Vect3D(0f, HEIGHT - 1f, 0f), new Vect3D(0f, -1f, 0f), test); break;
-								case 2: clipped = MatUtils.clipAgainstPlane(new Vect3D(0f, 0f, 0f), new Vect3D(1f, 0f, 0f), test); break;
-								case 3: clipped = MatUtils.clipAgainstPlane(new Vect3D(WIDTH - 1f, 0f, 0f), new Vect3D(-1f, 0f, 0f), test);
-							}
-							
-							nTrisToAdd = (byte) (clipped == null ? 0 : clipped.length);
-							
-							for(byte w = 0; w < nTrisToAdd; w++)
-								listTris.add(clipped[w]);
-						}
-						
-						nNewTris = listTris.size();
-					}
-					
-					for(Triangle t : listTris)
-					{
-						g.setColor(new Color((int)(t.color.getRed() * t.lum), (int)(t.color.getGreen() * t.lum), (int)(t.color.getBlue() * t.lum)));
-						
-						int[] xs = new int[]{(int)t.p[0].x, (int)t.p[1].x, (int)t.p[2].x};
-						int[] ys = new int[]{(int)t.p[0].y, (int)t.p[1].y, (int)t.p[2].y};
-					
-						g.fillPolygon(xs, ys, 3);
-						
-						if(showDebug)
-						{
-							g.setColor(Color.WHITE);
-							g.drawPolygon(xs, ys, 3);
-						}
-					}
-				}
+				for(int i = 0; i < N_THREAD; i++)
+					rp[i].start();
+				
+				for(int i = 0; i < N_THREAD; i++)
+					rp[i].join();*/
+				
+				new RenderingPipeline(mesh0, getWidth(), getHeight(), mProj, camera, vLight, db, showDebug).run();
+				
+				////////////////////////////////////////////
+				
+				db.draw(g);
 				
 				if(showDebug)
 				{
 					g.setColor(Color.BLACK);
-					g.fillRect(10, 10, 300, 110);
+					g.fillRect(10, 10, 340, 170);
 					
 					String fps = "FPS  =  " + getFPS();
 					
-					String cameraX = "Camera.X  =  " + vCamera.x;
-					String cameraY = "Camera.Y  =  " + vCamera.y;
-					String cameraZ = "Camera.Z  =  " + vCamera.z;
+					String cameraX = "Camera X  =  " + camera.getX();
+					String cameraY = "Camera Y  =  " + camera.getY();
+					String cameraZ = "Camera Z  =  " + camera.getZ();
+					String cameraPitch = "Camera Pitch = " + camera.getPitch();
+					String cameraYaw = "Camera Yaw = " + camera.getYaw();
+					String cameraRoll = "Camera Roll = " + camera.getRoll();
 					
 					g.setColor(Color.GREEN);
 					g.setFont(new Font("Consolas", Font.PLAIN, 18));
@@ -242,6 +251,9 @@ public class Main
 					g.drawString(cameraX, 20, 70);
 					g.drawString(cameraY, 20, 90);
 					g.drawString(cameraZ, 20, 110);
+					g.drawString(cameraPitch, 20, 130);
+					g.drawString(cameraYaw, 20, 150);
+					g.drawString(cameraRoll, 20, 170);
 				}
 			}
 		};

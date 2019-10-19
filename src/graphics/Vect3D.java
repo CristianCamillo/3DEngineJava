@@ -1,5 +1,7 @@
 package graphics;
 
+//updated 16/10/2019
+
 public class Vect3D implements Cloneable
 {
 	public float x;
@@ -31,8 +33,8 @@ public class Vect3D implements Cloneable
 	
 	Vect3D applyMat(float[][] m)
 	{
-		Vect3D v = MatUtils.mulVecMat(this, m);
-		v = MatUtils.divVec(v, v.w);
+		Vect3D v = MathUtils.mulVecMat(this, m);
+		v = MathUtils.divVec(v, v.w);
 		
 		return v;
 	}

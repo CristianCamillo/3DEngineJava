@@ -228,9 +228,9 @@ public class MathUtils
 		int nOutsideTexCount = 0;
 		
 		float[] d = new float[3];
-		d[0] = distance(normVec(inTri.p[0]), planeN, planeP); // added
-		d[1] = distance(normVec(inTri.p[1]), planeN, planeP); // norms
-		d[2] = distance(normVec(inTri.p[2]), planeN, planeP); //
+		d[0] = distance(inTri.p[0], planeN, planeP); // added
+		d[1] = distance(inTri.p[1], planeN, planeP); // norms
+		d[2] = distance(inTri.p[2], planeN, planeP); //
 	
 		
 		for(int i = 0; i < 3; i++)

@@ -1,5 +1,6 @@
 package graphics;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 public class RenderingPipeline //extends Thread
@@ -91,7 +92,7 @@ public class RenderingPipeline //extends Thread
 					
 					Triangle triProjected = new Triangle(p, clipped[n].t, clipped[n].color, clipped[n].lum);
 					
-					triProjected.t[0].u /= triProjected.p[0].w; // works ok by dividing by t, not p
+				/*	triProjected.t[0].u /= triProjected.p[0].w; // works ok by dividing by t, not p
 					triProjected.t[1].u /= triProjected.p[1].w; //
 					triProjected.t[2].u /= triProjected.p[2].w; //
 					
@@ -102,7 +103,7 @@ public class RenderingPipeline //extends Thread
 					triProjected.t[0].w = 1f / triProjected.p[0].w; //
 					triProjected.t[1].w = 1f / triProjected.p[1].w; //
 					triProjected.t[2].w = 1f / triProjected.p[2].w; //
-					
+					*/
 					triProjected.p[0] = MathUtils.divVec(triProjected.p[0], triProjected.p[0].w);
 					triProjected.p[1] = MathUtils.divVec(triProjected.p[1], triProjected.p[1].w);
 					triProjected.p[2] = MathUtils.divVec(triProjected.p[2], triProjected.p[2].w);
@@ -132,7 +133,7 @@ public class RenderingPipeline //extends Thread
 	/*	for(Triangle t : visibleTris)
 			if(showWireframe)
 			{
-				System.out.println(t);
+			//	System.out.println(t);
 				
 				int[] xs = new int[]{(int)t.p[0].x, (int)t.p[1].x, (int)t.p[2].x};
 				int[] ys = new int[]{(int)t.p[0].y, (int)t.p[1].y, (int)t.p[2].y};
@@ -142,16 +143,22 @@ public class RenderingPipeline //extends Thread
 					{					
 						int y = (int)(ys[0] + ((ys[1] - ys[0]) * 1f / (xs[1] - xs[0])) * (x - xs[0]));
 						
+						if(x < 0 || x >= db.getWidth() || y < 0 || y >= db.getHeight())
+						{}else	{
+							
 						db.setValue(x, y, 2f);
-						db.setColor(x, y, Color.RED);
+						db.setColor(x, y, Color.RED);}
 					}
 				else
 					for(int y = Math.min(ys[0], ys[1]); y <= Math.max(ys[0], ys[1]); y++)
 					{					
 						int x = (int)(xs[0] + ((xs[1] - xs[0]) * 1f / (ys[1] - ys[0])) * (y - ys[0]));
 						
+						if(x < 0 || x >= db.getWidth() || y < 0 || y >= db.getHeight())
+						{}else	{
+							
 						db.setValue(x, y, 2f);
-						db.setColor(x, y, Color.RED);
+						db.setColor(x, y, Color.RED);}
 					}
 				
 				if(xs[1] != xs[2])				
@@ -159,16 +166,22 @@ public class RenderingPipeline //extends Thread
 					{					
 						int y = (int)(ys[1] + ((ys[2] - ys[1]) * 1f / (xs[2] - xs[1])) * (x - xs[1]));
 						
+						if(x < 0 || x >= db.getWidth() || y < 0 || y >= db.getHeight())
+						{}else	{
+							
 						db.setValue(x, y, 2f);
-						db.setColor(x, y, Color.RED);
+						db.setColor(x, y, Color.RED);}
 					}
 				else
 					for(int y = Math.min(ys[1], ys[2]); y <= Math.max(ys[1], ys[2]); y++)
 					{					
 						int x = (int)(xs[1] + ((xs[2] - xs[1]) * 1f / (ys[2] - ys[1])) * (y - ys[1]));
 						
+						if(x < 0 || x >= db.getWidth() || y < 0 || y >= db.getHeight())
+						{}else	{
+							
 						db.setValue(x, y, 2f);
-						db.setColor(x, y, Color.RED);
+						db.setColor(x, y, Color.RED);}
 					}
 				
 				if(xs[0] != xs[2])				
@@ -176,20 +189,26 @@ public class RenderingPipeline //extends Thread
 					{					
 						int y = (int)(ys[0] + ((ys[2] - ys[0]) * 1f / (xs[2] - xs[0])) * (x - xs[0]));
 						
+						if(x < 0 || x >= db.getWidth() || y < 0 || y >= db.getHeight())
+						{}else	{
+							
 						db.setValue(x, y, 2f);
-						db.setColor(x, y, Color.RED);
+						db.setColor(x, y, Color.RED);}
 					}
 				else
 					for(int y = Math.min(ys[0], ys[2]); y <= Math.max(ys[0], ys[2]); y++)
 					{					
 						int x = (int)(xs[0] + ((xs[2] - xs[0]) * 1f / (ys[2] - ys[0])) * (y - ys[0]));
 						
+						if(x < 0 || x >= db.getWidth() || y < 0 || y >= db.getHeight())
+						{}else	{
+							
 						db.setValue(x, y, 2f);
-						db.setColor(x, y, Color.RED);
+						db.setColor(x, y, Color.RED);}
 					}
-			}
+			}*/
 		
-		System.out.println("\n\n\n\n\n\n");*/
+		//System.out.println("\n\n\n\n\n\n");
 		
 		for(int i = 0; i < visibleTris.size(); i++)
 		{
@@ -226,10 +245,16 @@ public class RenderingPipeline //extends Thread
 			}
 			
 			for(Triangle t : listTris)
-				Texturizer.texturedTriangle((int)t.p[0].x, (int)t.p[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
-											(int)t.p[1].x, (int)t.p[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
-											(int)t.p[2].x, (int)t.p[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
+				Texturizer.texturedTriangle(Math.round(t.p[0].x), Math.round(t.p[0].y), t.t[0].u, t.t[0].v, t.t[0].w,
+											Math.round(t.p[1].x), Math.round(t.p[1].y), t.t[1].u, t.t[1].v, t.t[1].w,
+											Math.round(t.p[2].x), Math.round(t.p[2].y), t.t[2].u, t.t[2].v, t.t[2].w,
 											mesh.tex, db, t.lum, showWireframe);
 		}
+		
+		
+		/*Texturizer.texturedTriangle((int)t.p[0].x, (int)t.p[0].y, t.t[0].u, t.t[0].v, t.t[0].w,
+		(int)t.p[1].x, (int)t.p[1].y, t.t[1].u, t.t[1].v, t.t[1].w,
+		(int)t.p[2].x, (int)t.p[2].y, t.t[2].u, t.t[2].v, t.t[2].w,
+		mesh.tex, db, t.lum, showWireframe);*/
 	}
 }

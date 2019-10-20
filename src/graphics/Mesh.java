@@ -36,6 +36,8 @@ public final class Mesh extends Obj3D
 		else
 			tex = toBufferedImage(new ImageIcon(meshPath).getImage());
 		
+		tex.setAccelerationPriority(1);
+		
 		this.color = color;	
 		
 		vPosition = new Vect3D();	

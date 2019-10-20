@@ -43,6 +43,8 @@ public class Triangle implements Cloneable
 		String s = "";
 		for(byte i = 0; i < 3; i++)
 			s += p[i] + "\n";
+		for(byte i = 0; i < 3; i++)
+			s += t[i] + "\n";
 		s += "Color = " + color + "\nLum = " + lum + "\n";
 		
 		return s;

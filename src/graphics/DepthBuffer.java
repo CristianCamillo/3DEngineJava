@@ -25,12 +25,18 @@ public class DepthBuffer
 	
 	public float getValue(int x, int y)
 	{
-		return depthBuffer[x + y * getWidth()];
+		if(x < 0 || y < 0 || x >= width || y >= height)
+			return 2f;
+		
+		return depthBuffer[x + y * width];
 	}
 	
 	public Color getColor(int x, int y)
 	{
-		return colorBuffer[x + y * getWidth()];
+		if(x < 0 || y < 0 || x >= width || y >= height)
+			return null;
+		
+		return colorBuffer[x + y * width];
 	}
 	
 	public int getWidth()
@@ -47,23 +53,29 @@ public class DepthBuffer
 	{
 		for(int y = 0; y < height; y++)
 			for(int x = 0; x < width; x++)
-				depthBuffer[x + y * getWidth()] = 0f;
+				depthBuffer[x + y * width] = 0f;
 	}
 	
 	public void setValue(int x, int y, float v)
 	{
-		depthBuffer[x + y * getWidth()] = v;
+		if(x < 0 || y < 0 || x >= width || y >= height)
+			return;
+		
+		depthBuffer[x + y * width] = v;
 	}
 	
 	public void setColor(int x, int y, Color color)
 	{
-		colorBuffer[x + y * getWidth()] = color;
+		if(x < 0 || y < 0 || x >= width || y >= height)
+			return;
+		
+		colorBuffer[x + y * width] = color;
 	}
 	
 	public void draw(Graphics g)
-	{
-		for(int y = 0; y < getHeight(); y++)
-			for(int x = 0; x < getWidth(); x++)
+	{	
+		for(int y = 0; y < height; y++)
+			for(int x = 0; x < width; x++)
 				if(getValue(x, y) > 0f)
 				{
 					g.setColor(getColor(x, y));

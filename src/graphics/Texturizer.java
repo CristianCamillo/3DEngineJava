@@ -76,9 +76,11 @@ public class Texturizer
 		if(dy1 != 0)
 		{
 			for(int y = y1; y <= y2; y++)
-			{
-				int ax = (int)(x1 + (y - y1) * daxStep);
-				int bx = (int)(x1 + (y - y1) * dbxStep);
+			{				
+				/*int ax = (int)(x1 + (y - y1) * daxStep);
+				int bx = (int)(x1 + (y - y1) * dbxStep);*/
+				int ax = Math.round(x1 + (y - y1) * daxStep);
+				int bx = Math.round(x1 + (y - y1) * dbxStep);
 				
 				float su = u1 + (y - y1) * du1Step;
 				float sv = v1 + (y - y1) * dv1Step;
@@ -127,7 +129,7 @@ public class Texturizer
 			}
 		}
 		
-		dy1 = y3 - y2; //// were in if - start
+		dy1 = y3 - y2;
 		dx1 = x3 - x2;
 		dv1 = v3 - v2;
 		du1 = u3 - u2;
@@ -141,14 +143,17 @@ public class Texturizer
 		
 		if(dy1 != 0) du1Step = du1 * 1f / Math.abs(dy1);
 		if(dy1 != 0) dv1Step = dv1 * 1f / Math.abs(dy1);
-		if(dy1 != 0) dw1Step = dw1 * 1f / Math.abs(dy1); ///// were in if - end
+		if(dy1 != 0) dw1Step = dw1 * 1f / Math.abs(dy1);
 		
 		if(dy1 != 0)
-		{			
+		{
 			for(int y = y2; y <= y3; y++)
-			{
-				int ax = (int)(x2 + (y - y2) * daxStep);
-				int bx = (int)(x1 + (y - y1) * dbxStep);
+			{				
+				/*int ax = (int)(x2 + (y - y2) * daxStep);
+				int bx = (int)(x1 + (y - y1) * dbxStep);*/
+				
+				int ax = Math.round(x2 + (y - y2) * daxStep);
+				int bx = Math.round(x1 + (y - y1) * dbxStep);
 				
 				float su = u2 + (y - y2) * du1Step;
 				float sv = v2 + (y - y2) * dv1Step;
@@ -210,17 +215,32 @@ public class Texturizer
 	
 	private static Color sampleColor(float x, float y, BufferedImage tex)
 	{
-		int sx = (int)(x * tex.getWidth());
-		int sy = (int)(y * (tex.getHeight() - 1f));
+		/*int sx = (int)(x * tex.getWidth());
+		int sy = (int)(y * (tex.getHeight() - 1f));*/
+		
+		int sx = Math.round(x * tex.getWidth());
+		int sy = Math.round(y * (tex.getHeight() - 1f));
 		
 	//	System.out.println(x + " " + y + "\n" + sx + " " + sy);
 	//	System.exit(0);
 		
 	//	return new Color(tex.getRGB(sx, sy));
 		
-		if(sx < 0 || sx >= tex.getWidth() || sy < 0 || sy >= tex.getHeight())
+		/*if(sx < 0 || sx >= tex.getWidth() || sy < 0 || sy >= tex.getHeight())
 			return Color.GREEN;
 		else
-			return new Color(tex.getRGB(sx, sy));
+			return new Color(tex.getRGB(sx, sy));*/
+		
+		if(sx < 0)
+			sx = 0;
+		else if(sx >= tex.getWidth())
+			sx = tex.getWidth() - 1;
+		
+		if(sy < 0)
+			sy = 0;
+		else if(sy >= tex.getHeight())
+			sy = tex.getHeight() -  1;
+		
+		return new Color(tex.getRGB(sx, sy));
 	}
 }

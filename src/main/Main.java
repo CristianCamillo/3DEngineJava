@@ -40,14 +40,14 @@ public class Main
 	private final float movMult = 5f;
 	private final float rotMult = 2f;
 	
-	private Color bgrColor = new Color(0, 191, 255);
+	private Color bgColor = new Color(0, 191, 255);
 	private boolean showDebug = false;
 	
 	public Main() throws Exception
 	{
 		Mesh mesh0 = new Mesh("meshes//texturedCube.obj", true, Color.WHITE, "textures//player0.png");
 		//Mesh mesh0 = new Mesh("meshes//cube.obj", false, Color.WHITE, null);
-		//mesh0.setupPosition(0, 0, 0, 0, (float)(Math.PI / 2), (float)(Math.PI / 2));
+	//	mesh0.setupPosition(0, 0, 0, 0, (float)(Math.PI / 2), (float)(Math.PI / 2));
 		
 		meshes.add(mesh0);
 
@@ -184,7 +184,7 @@ public class Main
 			{
 				Graphics g = getGraphics();
 				
-				g.setColor(bgrColor);
+				g.setColor(bgColor);
 				g.fillRect(0, 0, getWidth(), getHeight());
 				
 				////////////////////////////////////////////////////////

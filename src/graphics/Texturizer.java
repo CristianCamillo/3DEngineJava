@@ -76,9 +76,7 @@ public class Texturizer
 		if(dy1 != 0)
 		{
 			for(int y = y1; y <= y2; y++)
-			{				
-				/*int ax = (int)(x1 + (y - y1) * daxStep);
-				int bx = (int)(x1 + (y - y1) * dbxStep);*/
+			{
 				int ax = Math.round(x1 + (y - y1) * daxStep);
 				int bx = Math.round(x1 + (y - y1) * dbxStep);
 				
@@ -118,9 +116,10 @@ public class Texturizer
 					}					
 					else if(w > db.getValue(x, y))
 					{
-						db.setValue(x, y, w);
 						Color color = sampleColor(u / w, v / w, tex);
 						color = new Color((int)(color.getRed() * lum), (int)(color.getGreen() * lum), (int)(color.getBlue() * lum));
+						
+						db.setValue(x, y, w);
 						db.setColor(x, y, color);
 					}
 
@@ -149,9 +148,6 @@ public class Texturizer
 		{
 			for(int y = y2; y <= y3; y++)
 			{				
-				/*int ax = (int)(x2 + (y - y2) * daxStep);
-				int bx = (int)(x1 + (y - y1) * dbxStep);*/
-				
 				int ax = Math.round(x2 + (y - y2) * daxStep);
 				int bx = Math.round(x1 + (y - y1) * dbxStep);
 				
@@ -191,9 +187,10 @@ public class Texturizer
 					}					
 					else if(w > db.getValue(x, y))
 					{
-						db.setValue(x, y, w);
 						Color color = sampleColor(u / w, v / w, tex);
 						color = new Color((int)(color.getRed() * lum), (int)(color.getGreen() * lum), (int)(color.getBlue() * lum));
+						
+						db.setValue(x, y, w);
 						db.setColor(x, y, color);
 					}
 					
@@ -215,16 +212,8 @@ public class Texturizer
 	
 	private static Color sampleColor(float x, float y, BufferedImage tex)
 	{
-		/*int sx = (int)(x * tex.getWidth());
-		int sy = (int)(y * (tex.getHeight() - 1f));*/
-		
 		int sx = Math.round(x * tex.getWidth());
 		int sy = Math.round(y * (tex.getHeight() - 1f));
-		
-	//	System.out.println(x + " " + y + "\n" + sx + " " + sy);
-	//	System.exit(0);
-		
-	//	return new Color(tex.getRGB(sx, sy));
 		
 		/*if(sx < 0 || sx >= tex.getWidth() || sy < 0 || sy >= tex.getHeight())
 			return Color.GREEN;

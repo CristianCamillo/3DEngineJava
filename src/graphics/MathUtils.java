@@ -6,6 +6,11 @@ public class MathUtils
 	/* Vector functions                                                  */
 	/*********************************************************************/
 	
+	public static Vect2D addVec(Vect2D v0, Vect2D v1)
+	{
+		return new Vect2D(v0.u + v1.u, v0.v + v1.v);
+	}
+	
 	public static Vect3D addVec(Vect3D v0, Vect3D v1)
 	{
 		return new Vect3D(v0.x + v1.x, v0.y + v1.y, v0.z + v1.z);
@@ -16,9 +21,21 @@ public class MathUtils
 		return new Vect3D(v0.x - v1.x, v0.y - v1.y, v0.z - v1.z);
 	}
 	
-	public static Vect3D mulVec(Vect3D v, float k)
+	public static Vect2D mulVec(Vect2D v, float m)
 	{
-		return new Vect3D(v.x * k, v.y * k, v.z * k);
+		return new Vect2D(v.u * m, v.v * m);
+	}
+	
+	public static Vect3D mulVec(Vect3D v, float m)
+	{
+		return new Vect3D(v.x * m, v.y * m, v.z * m);
+	}
+	
+	public static Vect2D divVec(Vect2D v, float d)
+	{
+		if(d == 0)
+			throw new ArithmeticException();
+		return new Vect2D(v.u / d, v.v / d);
 	}
 	
 	public static Vect3D divVec(Vect3D v, float d)
@@ -215,7 +232,7 @@ public class MathUtils
 	/* Other functions                                                   */
 	/*********************************************************************/
 	
-	public static Triangle[] clipAgainstPlane(Vect3D planeP, Vect3D planeN, Triangle inTri) // checked
+	public static Triangle[] clipAgainstPlane(Vect3D planeP, Vect3D normal, Triangle inTri) // checked
 	{		
 		Vect3D[] insidePoints = new Vect3D[3];
 		Vect3D[] outsidePoints = new Vect3D[3];
@@ -228,9 +245,9 @@ public class MathUtils
 		int nOutsideTexCount = 0;
 		
 		float[] d = new float[3];
-		d[0] = distance(inTri.p[0], planeN, planeP); // added
-		d[1] = distance(inTri.p[1], planeN, planeP); // norms
-		d[2] = distance(inTri.p[2], planeN, planeP); //
+		d[0] = distance(inTri.p[0], normal, planeP);
+		d[1] = distance(inTri.p[1], normal, planeP);
+		d[2] = distance(inTri.p[2], normal, planeP);
 	
 		
 		for(int i = 0; i < 3; i++)
@@ -256,8 +273,8 @@ public class MathUtils
 			Vect3D[] p = new Vect3D[3];
 			
 			p[0] = insidePoints[0];
-			p[1] = interPlane(planeP, planeN, insidePoints[0], outsidePoints[0], tt);
-			p[2] = interPlane(planeP, planeN, insidePoints[0], outsidePoints[1], tt);
+			p[1] = interPlane(planeP, normal, insidePoints[0], outsidePoints[0], tt);
+			p[2] = interPlane(planeP, normal, insidePoints[0], outsidePoints[1], tt);
 			
 			////////////////////////////////////////
 			
@@ -281,13 +298,13 @@ public class MathUtils
 			
 			p0[0] = insidePoints[0];
 			p0[1] = insidePoints[1];
-			p0[2] = interPlane(planeP, planeN, insidePoints[0], outsidePoints[0], tt);
+			p0[2] = interPlane(planeP, normal, insidePoints[0], outsidePoints[0], tt);
 	
 			Vect3D[] p1 = new Vect3D[3];
 			
 			p1[0] = insidePoints[1];
 			p1[1] = p0[2]; // maybe clone
-			p1[2] = interPlane(planeP, planeN, insidePoints[1], outsidePoints[0], tt);
+			p1[2] = interPlane(planeP, normal, insidePoints[1], outsidePoints[0], tt);
 				
 			///////////////////////////////////////////
 			
@@ -311,8 +328,8 @@ public class MathUtils
 		}
 	}
 	
-	public static float distance(Vect3D p, Vect3D planeN, Vect3D planeP)
+	public static float distance(Vect3D p, Vect3D normal, Vect3D planeP)
 	{
-		return dotProd(planeN, p) - dotProd(planeN, planeP);
+		return dotProd(normal, p) - dotProd(normal, planeP);
 	}
 }

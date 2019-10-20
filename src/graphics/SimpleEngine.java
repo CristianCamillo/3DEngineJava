@@ -50,7 +50,7 @@ public class SimpleEngine implements KeyListener, MouseListener
 	/* Keyboard and Mouse Inputs                                         */
 	/*********************************************************************/
 	
-	private boolean[] key = new boolean[256];
+	private boolean[] key = new boolean[1024];
 	private boolean[] mouse = new boolean[MouseInfo.getNumberOfButtons()];
 	
 	private boolean[] keyToggle = new boolean[256];

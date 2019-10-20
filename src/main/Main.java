@@ -10,6 +10,7 @@ import graphics.Camera;
 import graphics.DepthBuffer;
 import graphics.MathUtils;
 import graphics.Mesh;
+import graphics.PostProcessingEffects;
 import graphics.RenderingPipeline;
 import graphics.SimpleEngine;
 import graphics.Vect3D;
@@ -28,8 +29,10 @@ public class Main
 	
 	private float[][] mProj = MathUtils.projMat(90, height * 1f / width, 0.1f, 1000f);
 	
-	private final Camera defaultCamera = new Camera(0f, 0f, -4f);
+	private final Camera defaultCamera = new Camera(0.5f, 0.5f, -3f);
 	private Camera camera = defaultCamera.clone();
+	
+	
 	
 	private DepthBuffer db = new DepthBuffer(width, height);
 	
@@ -37,10 +40,14 @@ public class Main
 	
 	private Vect3D vLight = MathUtils.normVec(new Vect3D(1f, 1f, -1f));
 
+	private Color bgc = Color.BLACK;// new Color(0, 191, 255);
+	
 	private final float movMult = 5f;
 	private final float rotMult = 2f;
 	
-	private Color bgColor = new Color(0, 191, 255);
+	
+	
+
 	private boolean showDebug = false;
 	
 	public Main() throws Exception
@@ -184,9 +191,6 @@ public class Main
 			{
 				Graphics g = getGraphics();
 				
-				g.setColor(bgColor);
-				g.fillRect(0, 0, getWidth(), getHeight());
-				
 				////////////////////////////////////////////////////////
 			
 				db.reset();
@@ -227,9 +231,21 @@ public class Main
 				
 				new RenderingPipeline(mesh0, getWidth(), getHeight(), mProj, camera, vLight, db, showDebug).run();
 				
-				////////////////////////////////////////////
+				//////////////////////////////////////////////////////////////////////////
 				
+				Color bgC = bgc; 
+				
+				PostProcessingEffects.outerLines(db, Color.GREEN);
+				//bgC = PostProcessingEffects.negative(db, bgc);
+				//bgC = PostProcessingEffects.saturate(db, bgC, 0f);
+				//bgC = PostProcessingEffects.grayScale(db, bgC);
+				//bgC = PostProcessingEffects.fakeHDR(db, bgC);
+								
+				g.setColor(bgC);
+				g.fillRect(0, 0, getWidth(), getHeight());
 				db.draw(g);
+				
+				//////////////////////////////////////////////////////////////////////////
 				
 				if(showDebug)
 				{

@@ -16,7 +16,7 @@ public final class Mesh extends Obj3D
 	private final boolean hasTexture;
 	
 	private Color color = null;
-	public BufferedImage tex = null; // change to private
+	BufferedImage tex = null; // change to private
 	
 	public Triangle[] tris;
 	private Triangle[] backupTris;
@@ -24,21 +24,20 @@ public final class Mesh extends Obj3D
 	public Mesh(String filePath, boolean hasTexture, Color color, String meshPath) throws FileNotFoundException
 	{		
 		this.hasTexture = hasTexture;
+		if(color == null)
+			throw new NullPointerException("The color cannot be null.");
+		
+		this.color = color;	
 		
 		if(!hasTexture)
-		{
-			if(color == null)
-				throw new NullPointerException("The color cannot be null.");
-			
-			this.tex = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+		{			
+			tex = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 			tex.setRGB(0, 0, color.getRGB());
 		}
 		else
 			tex = toBufferedImage(new ImageIcon(meshPath).getImage());
 		
-		tex.setAccelerationPriority(1);
-		
-		this.color = color;	
+		tex.setAccelerationPriority(1);	
 		
 		vPosition = new Vect3D();	
 		
@@ -177,6 +176,9 @@ public final class Mesh extends Obj3D
 	
 	public void setColor(Color color)
 	{
+		if(color == null)
+			throw new NullPointerException("The color cannot be null.");
+		
 		for(int i = 0; i < tris.length; i++)
 		{
 			tris[i].color = color;

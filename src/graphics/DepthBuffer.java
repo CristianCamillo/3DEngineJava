@@ -16,27 +16,11 @@ public class DepthBuffer
 		if(width <= 0 || height <= 0)
 			throw new IllegalArgumentException("Width and height must be greater than 0.");
 		
-		depthBuffer = new float[width * height];
-		colorBuffer = new Color[width * height];
-		
 		this.width = width;
 		this.height = height;
-	}
-	
-	public float getValue(int x, int y)
-	{
-		if(x < 0 || y < 0 || x >= width || y >= height)
-			return 2f;
 		
-		return depthBuffer[x + y * width];
-	}
-	
-	public Color getColor(int x, int y)
-	{
-		if(x < 0 || y < 0 || x >= width || y >= height)
-			return null;
-		
-		return colorBuffer[x + y * width];
+		depthBuffer = new float[width * height];
+		colorBuffer = new Color[width * height];
 	}
 	
 	public int getWidth()
@@ -49,11 +33,20 @@ public class DepthBuffer
 		return height;
 	}
 	
-	public void reset()
+	public float getValue(int x, int y)
 	{
-		for(int y = 0; y < height; y++)
-			for(int x = 0; x < width; x++)
-				depthBuffer[x + y * width] = 0f;
+		if(x < 0 || y < 0 || x >= width || y >= height)
+			return Float.POSITIVE_INFINITY;
+		
+		return depthBuffer[x + y * width];
+	}
+	
+	public Color getColor(int x, int y)
+	{
+		if(x < 0 || y < 0 || x >= width || y >= height || getValue(x, y) == 0f)
+			return null;
+		
+		return colorBuffer[x + y * width];
 	}
 	
 	public void setValue(int x, int y, float v)
@@ -70,6 +63,13 @@ public class DepthBuffer
 			return;
 		
 		colorBuffer[x + y * width] = color;
+	}
+	
+	public void reset()
+	{
+		for(int y = 0; y < height; y++)
+			for(int x = 0; x < width; x++)
+				depthBuffer[x + y * width] = 0f;
 	}
 	
 	public void draw(Graphics g)

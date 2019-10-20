@@ -42,8 +42,7 @@ public class PostProcessingEffects
 		for(int y = 0; y < db.getHeight(); y++)
 			for(int x = 0; x < db.getWidth(); x++)
 			{
-				Color color = db.getColor(x, y);
-				
+				Color color = db.getColor(x, y);				
 				if(color != null)
 					db.setColor(x, y, saturate(color, sat));
 			}
@@ -94,7 +93,7 @@ public class PostProcessingEffects
 			}
 	}*/
 	
-	/*public static Color fakeHDR(DepthBuffer db, Color bgc) // no
+	public static Color fakeHDR(DepthBuffer db, Color bgc) // no
 	{
 		checkDBNotNull(db);
 		checkColorNotNull(bgc);
@@ -147,11 +146,11 @@ public class PostProcessingEffects
 				float blend = HDR + color;
 				color = (float)(Math.pow(Math.abs(blend), HDRPower) + HDR); // pow - don't use fractions for HDRpower				
 				
-				db.setColor(x, y, saturate(new Color((int)color)));
+				db.setColor(x, y, saturate(new Color((int)color), 0.5f));
 			}
 		
-		return saturate(bgc); 
-	}*/
+		return saturate(bgc, 0.5f); 
+	}
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Utils
@@ -170,7 +169,7 @@ public class PostProcessingEffects
 	
 	private static Color negative(Color color)
 	{		
-		return new Color(255 - color.getRed(), 255 - color.getBlue(), 255 - color.getBlue());
+		return new Color(255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue());
 	}
 	
 	private static Color saturate(Color color, float sat)

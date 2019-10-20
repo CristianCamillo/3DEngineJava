@@ -232,7 +232,7 @@ public class MathUtils
 	/* Other functions                                                   */
 	/*********************************************************************/
 	
-	public static Triangle[] clipAgainstPlane(Vect3D planeP, Vect3D normal, Triangle inTri) // checked
+	public static Triangle[] clipAgainstPlane(Vect3D planeP, Vect3D normal, Triangle inTri)
 	{		
 		Vect3D[] insidePoints = new Vect3D[3];
 		Vect3D[] outsidePoints = new Vect3D[3];
@@ -247,8 +247,7 @@ public class MathUtils
 		float[] d = new float[3];
 		d[0] = distance(inTri.p[0], normal, planeP);
 		d[1] = distance(inTri.p[1], normal, planeP);
-		d[2] = distance(inTri.p[2], normal, planeP);
-	
+		d[2] = distance(inTri.p[2], normal, planeP);	
 		
 		for(int i = 0; i < 3; i++)
 			if(d[i] >= 0)
@@ -270,60 +269,61 @@ public class MathUtils
 		{
 			float[] tt = new float[1];
 			
+			
 			Vect3D[] p = new Vect3D[3];
-			
-			p[0] = insidePoints[0];
-			p[1] = interPlane(planeP, normal, insidePoints[0], outsidePoints[0], tt);
-			p[2] = interPlane(planeP, normal, insidePoints[0], outsidePoints[1], tt);
-			
-			////////////////////////////////////////
-			
 			Vect2D[] t = new Vect2D[3];
 			
-			t[0] = insideTex[0];			
+			p[0] = insidePoints[0];
+			t[0] = insideTex[0];
+			
+			p[1] = interPlane(planeP, normal, insidePoints[0], outsidePoints[0], tt);
 			t[1] = new Vect2D(tt[0] * (outsideTex[0].u - insideTex[0].u) + insideTex[0].u,
 							  tt[0] * (outsideTex[0].v - insideTex[0].v) + insideTex[0].v,
-							  tt[0] * (outsideTex[0].w - insideTex[0].w) + insideTex[0].w);			
+							  tt[0] * (outsideTex[0].w - insideTex[0].w) + insideTex[0].w);	
+			
+			p[2] = interPlane(planeP, normal, insidePoints[0], outsidePoints[1], tt);
 			t[2] = new Vect2D(tt[0] * (outsideTex[1].u - insideTex[0].u) + insideTex[0].u,
 					  		  tt[0] * (outsideTex[1].v - insideTex[0].v) + insideTex[0].v,
 					  		  tt[0] * (outsideTex[1].w - insideTex[0].w) + insideTex[0].w);		
 		
+			
 			return new Triangle[] {new Triangle(p, t, inTri.color, inTri.lum)};
 		}
 		else
 		{
 			float[] tt = new float[1];
 			
+			
 			Vect3D[] p0 = new Vect3D[3];
-			
-			p0[0] = insidePoints[0];
-			p0[1] = insidePoints[1];
-			p0[2] = interPlane(planeP, normal, insidePoints[0], outsidePoints[0], tt);
-	
-			Vect3D[] p1 = new Vect3D[3];
-			
-			p1[0] = insidePoints[1];
-			p1[1] = p0[2]; // maybe clone
-			p1[2] = interPlane(planeP, normal, insidePoints[1], outsidePoints[0], tt);
-				
-			///////////////////////////////////////////
-			
 			Vect2D[] t0 = new Vect2D[3];
 			
+			p0[0] = insidePoints[0];
 			t0[0] = insideTex[0];
+			
+			p0[1] = insidePoints[1];
 			t0[1] = insideTex[1];
+			
+			p0[2] = interPlane(planeP, normal, insidePoints[0], outsidePoints[0], tt);
 			t0[2] = new Vect2D(tt[0] * (outsideTex[0].u - insideTex[0].u) + insideTex[0].u,
 							   tt[0] * (outsideTex[0].v - insideTex[0].v) + insideTex[0].v,
 							   tt[0] * (outsideTex[0].w - insideTex[0].w) + insideTex[0].w);
+	
 			
+			Vect3D[] p1 = new Vect3D[3];
 			Vect2D[] t1 = new Vect2D[3];
 			
+			p1[0] = insidePoints[1];
 			t1[0] = insideTex[1];
+			
+			p1[1] = p0[2]; // maybe clone
 			t1[1] = t0[2]; // maybe clone
+			
+			p1[2] = interPlane(planeP, normal, insidePoints[1], outsidePoints[0], tt);
 			t1[2] = new Vect2D(tt[0] * (outsideTex[0].u - insideTex[1].u) + insideTex[1].u,
 							   tt[0] * (outsideTex[0].v - insideTex[1].v) + insideTex[1].v,
-							   tt[0] * (outsideTex[0].w - insideTex[1].w) + insideTex[1].w);		
-			
+							   tt[0] * (outsideTex[0].w - insideTex[1].w) + insideTex[1].w);
+
+
 			return new Triangle[] {new Triangle(p0, t0, inTri.color, inTri.lum), new Triangle(p1, t1, inTri.color, inTri.lum)};
 		}
 	}

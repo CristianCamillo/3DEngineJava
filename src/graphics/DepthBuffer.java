@@ -23,6 +23,8 @@ public class DepthBuffer
 		colorBuffer = new Color[width * height];
 	}
 	
+	////////////////////////////////////////////////////
+	
 	public int getWidth()
 	{
 		return width;
@@ -49,6 +51,8 @@ public class DepthBuffer
 		return colorBuffer[x + y * width];
 	}
 	
+	////////////////////////////////////////////////////
+	
 	public void setValue(int x, int y, float v)
 	{
 		if(x < 0 || y < 0 || x >= width || y >= height)
@@ -65,6 +69,8 @@ public class DepthBuffer
 		colorBuffer[x + y * width] = color;
 	}
 	
+	////////////////////////////////////////////////////
+	
 	public void reset()
 	{
 		for(int y = 0; y < height; y++)
@@ -72,14 +78,14 @@ public class DepthBuffer
 				depthBuffer[x + y * width] = 0f;
 	}
 	
-	public void draw(Graphics g)
+	public void draw(Graphics g, int pixelSize)
 	{	
 		for(int y = 0; y < height; y++)
 			for(int x = 0; x < width; x++)
 				if(getValue(x, y) > 0f)
 				{
 					g.setColor(getColor(x, y));
-					g.drawLine(x, y, x, y);
+					g.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 				}
 	}
 }

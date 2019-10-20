@@ -17,8 +17,8 @@ import graphics.Vect3D;
 
 public class Main
 {
-	private short width = 1280;
-	private short height = 720;
+	private int width = 1280;
+	private int height = 720;
 	private String title = "3D Engine Attempt No. 100";
 	private boolean fpsLock = false;
 	private short fpsCap = 60;
@@ -32,9 +32,9 @@ public class Main
 	private final Camera defaultCamera = new Camera(0.5f, 0.5f, -3f);
 	private Camera camera = defaultCamera.clone();
 	
+	private int pixelSize = 2;
 	
-	
-	private DepthBuffer db = new DepthBuffer(width, height);
+	private DepthBuffer db = new DepthBuffer(width / pixelSize, height / pixelSize);
 	
 	private ArrayList<Mesh> meshes = new ArrayList<Mesh>();
 	
@@ -79,7 +79,7 @@ public class Main
 				{
 					setSize(width, height, !getFullscreen());
 					mProj = MathUtils.projMat(90, getHeight() * 1f / getWidth(), 0.1f, 1000f);
-					db = new DepthBuffer(getWidth(), getHeight());
+					db = new DepthBuffer(getWidth() / pixelSize, getHeight() / pixelSize);
 				}
 				
 				if(keyToggle(KeyEvent.VK_F4)) // set random color for mesh0
@@ -229,7 +229,7 @@ public class Main
 				for(int i = 0; i < N_THREAD; i++)
 					rp[i].join();*/
 				
-				new RenderingPipeline(mesh0, getWidth(), getHeight(), mProj, camera, vLight, db, showDebug).run();
+				new RenderingPipeline(mesh0, getWidth() / pixelSize, getHeight() / pixelSize, mProj, camera, vLight, db, showDebug).run();
 				
 				//////////////////////////////////////////////////////////////////////////
 				
@@ -243,7 +243,7 @@ public class Main
 								
 				g.setColor(bgC);
 				g.fillRect(0, 0, getWidth(), getHeight());
-				db.draw(g);
+				db.draw(g, pixelSize);
 				
 				//////////////////////////////////////////////////////////////////////////
 				

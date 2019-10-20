@@ -28,7 +28,7 @@ public class RenderingPipeline //extends Thread
 	private final static Vect3D V_m100 = new Vect3D(-1f, 0f, 0f);
 	private final static Vect3D V_001 = new Vect3D(0f, 0f, 1f);
 	
-	private final static Vect3D V_NEAR_PLANE = new Vect3D(0f, 0f, 0.1f); // was set to 0.001
+	private final static Vect3D V_NEAR_PLANE = new Vect3D(0f, 0f, 0.1f);
 	
 	private final static Vect3D V_OFFSET_VIEW = new Vect3D(1f, 1f, 0f);
 	

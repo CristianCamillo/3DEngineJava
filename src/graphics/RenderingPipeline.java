@@ -76,7 +76,7 @@ public class RenderingPipeline //extends Thread
 				p[0] = MathUtils.mulVecMat(tri.p[0], mView);
 				p[1] = MathUtils.mulVecMat(tri.p[1], mView);
 				p[2] = MathUtils.mulVecMat(tri.p[2], mView);				
-				
+								
 				Triangle triViewed = new Triangle(p, tri.t, tri.color, lum);				
 				
 				Triangle[] clipped = MathUtils.clipAgainstPlane(V_NEAR_PLANE, V_001, triViewed);
@@ -92,26 +92,14 @@ public class RenderingPipeline //extends Thread
 					
 					Triangle triProjected = new Triangle(p, clipped[n].t, clipped[n].color, clipped[n].lum);
 					
-				/*	triProjected.t[0] = MathUtils.divVec(triProjected.t[0], triProjected.p[0].w);
+					triProjected.t[0] = MathUtils.divVec(triProjected.t[0], triProjected.p[0].w);
 					triProjected.t[1] = MathUtils.divVec(triProjected.t[1], triProjected.p[1].w);
 					triProjected.t[2] = MathUtils.divVec(triProjected.t[2], triProjected.p[2].w);
 					
 					triProjected.t[0].w = 1f / triProjected.p[0].w;
 					triProjected.t[1].w = 1f / triProjected.p[1].w;
-					triProjected.t[2].w = 1f / triProjected.p[2].w;*/
+					triProjected.t[2].w = 1f / triProjected.p[2].w;
 					
-				/*	triProjected.t[0].u /= triProjected.p[0].w; //
-					triProjected.t[1].u /= triProjected.p[1].w; //
-					triProjected.t[2].u /= triProjected.p[2].w; //
-					
-					triProjected.t[0].v /= triProjected.p[0].w; //
-					triProjected.t[1].v /= triProjected.p[1].w; //
-					triProjected.t[2].v /= triProjected.p[2].w; //
-					
-					triProjected.t[0].w = 1f / triProjected.p[0].w; //
-					triProjected.t[1].w = 1f / triProjected.p[1].w; //
-					triProjected.t[2].w = 1f / triProjected.p[2].w; //
-					*/
 					triProjected.p[0] = MathUtils.divVec(triProjected.p[0], triProjected.p[0].w);
 					triProjected.p[1] = MathUtils.divVec(triProjected.p[1], triProjected.p[1].w);
 					triProjected.p[2] = MathUtils.divVec(triProjected.p[2], triProjected.p[2].w);
@@ -179,7 +167,7 @@ public class RenderingPipeline //extends Thread
 				Texturizer.texturedTriangle(Math.round(t.p[0].x), Math.round(t.p[0].y), t.t[0].u, t.t[0].v, t.t[0].w,
 											Math.round(t.p[1].x), Math.round(t.p[1].y), t.t[1].u, t.t[1].v, t.t[1].w,
 											Math.round(t.p[2].x), Math.round(t.p[2].y), t.t[2].u, t.t[2].v, t.t[2].w,
-											mesh.tex, db, t.lum, false);
+											mesh.tex, db, t.lum, showWireframe);
 		}
 	}
 	

@@ -29,7 +29,7 @@ public class Main
 	
 	private float[][] mProj = MathUtils.projMat(90, height * 1f / width, 0.1f, 1000f);
 	
-	private final Camera defaultCamera = new Camera(0.5f, 0.5f, -3f);
+	private final Camera defaultCamera = new Camera(0.5f, 0.5f, -1f);
 	private Camera camera = defaultCamera.clone();
 	
 	private int pixelSize = 2;
@@ -40,21 +40,24 @@ public class Main
 	
 	private Vect3D vLight = MathUtils.normVec(new Vect3D(1f, 1f, -1f));
 
-	private Color bgc = Color.BLACK;// new Color(0, 191, 255);
+	private Color bgc = new Color(0, 191, 255);
 	
 	private final float movMult = 5f;
 	private final float rotMult = 2f;
 	
-	
-	
 
 	private boolean showDebug = false;
+
+	
+	
+	
 	
 	public Main() throws Exception
 	{
 		Mesh mesh0 = new Mesh("meshes//texturedCube.obj", true, Color.WHITE, "textures//player0.png");
 		//Mesh mesh0 = new Mesh("meshes//cube.obj", false, Color.WHITE, null);
 	//	mesh0.setupPosition(0, 0, 0, 0, (float)(Math.PI / 2), (float)(Math.PI / 2));
+		mesh0.setupPosition(0, 0, 0, 0, 0, 0);
 		
 		meshes.add(mesh0);
 
@@ -194,42 +197,8 @@ public class Main
 				////////////////////////////////////////////////////////
 			
 				db.reset();
-				
-				/*ArrayList<Triangle> allTris = new ArrayList<Triangle>();
-				@SuppressWarnings("unchecked")
-				ArrayList<Triangle>[] subTris = new ArrayList[N_THREAD];
-				RenderingPipeline[] rp = new RenderingPipeline[N_THREAD];
-			
-				int k = -1;
-				while(mesh[++k] != null)
-					for(int i = 0; i < mesh[k].tris.length; i++)
-						allTris.add(mesh[k].tris[i]);
-				
-				for(int i = 0; i < N_THREAD; i++)
-					subTris[i] = new ArrayList<Triangle>();
-				
-				int nTris = allTris.size();
-				
-				for(int i = 0; i < N_THREAD; i++)
-					for(int j = nTris / N_THREAD * i; j < nTris / N_THREAD * (i + 1); j++)
-						subTris[i].add(allTris.get(j));
-				
-				if(nTris / N_THREAD != nTris * 1f / N_THREAD)
-					for(int i = nTris / N_THREAD * N_THREAD; i < nTris; i++)
-						subTris[N_THREAD - 1].add(allTris.get(i));
-				
-				
-				
-				for(int i = 0; i < N_THREAD; i++)
-					rp[i] = new RenderingPipeline(mesh0, getWidth(), getHeight(), mProj, camera, vLight, db, showDebug);
-					
-				for(int i = 0; i < N_THREAD; i++)
-					rp[i].start();
-				
-				for(int i = 0; i < N_THREAD; i++)
-					rp[i].join();*/
-				
-				new RenderingPipeline(mesh0, getWidth() / pixelSize, getHeight() / pixelSize, mProj, camera, vLight, db, showDebug).run();
+				for(Mesh mesh : meshes)
+					new RenderingPipeline(mesh, getWidth() / pixelSize, getHeight() / pixelSize, mProj, camera, vLight, db, showDebug).run();
 				
 				//////////////////////////////////////////////////////////////////////////
 				

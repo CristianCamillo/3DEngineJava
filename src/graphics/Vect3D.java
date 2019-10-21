@@ -46,10 +46,6 @@ public class Vect3D implements Cloneable
 	
 	public Vect3D clone()
 	{
-		try
-		{
-			return (Vect3D) super.clone();
-		}
-		catch(Exception e){return null;}
+		return new Vect3D(x, y, z, w);
 	}
 }

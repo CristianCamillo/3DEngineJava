@@ -52,10 +52,6 @@ public class Triangle implements Cloneable
 	
 	public Triangle clone()
 	{
-		try
-		{
-			return (Triangle) super.clone();
-		}
-		catch(Exception e){return null;}
+		return new Triangle(p.clone(), t.clone(), color, lum);
 	}
 }

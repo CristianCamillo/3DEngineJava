@@ -73,6 +73,8 @@ public class Texturizer
 		if(dy2 != 0) dv2Step = dv2 * 1f / Math.abs(dy2);
 		if(dy2 != 0) dw2Step = dw2 * 1f / Math.abs(dy2);
 		
+		// top flat tri
+		
 		if(dy1 != 0)
 		{
 			for(int y = y1; y <= y2; y++)
@@ -144,6 +146,8 @@ public class Texturizer
 		if(dy1 != 0) dv1Step = dv1 * 1f / Math.abs(dy1);
 		if(dy1 != 0) dw1Step = dw1 * 1f / Math.abs(dy1);
 		
+		// bottom flat tri
+		
 		if(dy1 != 0)
 		{
 			for(int y = y2; y <= y3; y++)
@@ -153,7 +157,7 @@ public class Texturizer
 				
 				float su = u2 + (y - y2) * du1Step;
 				float sv = v2 + (y - y2) * dv1Step;
-				float sw = w1 + (y - y1) * dw1Step;
+				float sw = w1 + (y - y2) * dw1Step;
 				
 				float eu = u1 + (y - y1) * du2Step;
 				float ev = v1 + (y - y1) * dv2Step;
@@ -215,11 +219,11 @@ public class Texturizer
 		int sx = Math.round(x * tex.getWidth());
 		int sy = Math.round(y * (tex.getHeight() - 1f));
 		
-		/*if(sx < 0 || sx >= tex.getWidth() || sy < 0 || sy >= tex.getHeight())
-			return Color.GREEN;
+		if(sx < 0 || sx >= tex.getWidth() || sy < 0 || sy >= tex.getHeight())
+			return new Color(255, 70, 0);
 		else
-			return new Color(tex.getRGB(sx, sy));*/
-		
+			return new Color(tex.getRGB(sx, sy));
+		/*
 		if(sx < 0)
 			sx = 0;
 		else if(sx >= tex.getWidth())
@@ -230,6 +234,6 @@ public class Texturizer
 		else if(sy >= tex.getHeight())
 			sy = tex.getHeight() -  1;
 		
-		return new Color(tex.getRGB(sx, sy));
+		return new Color(tex.getRGB(sx, sy));*/
 	}
 }

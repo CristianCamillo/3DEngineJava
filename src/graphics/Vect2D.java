@@ -32,11 +32,7 @@ public class Vect2D implements Cloneable
 	
 	public Vect2D clone()
 	{
-		try
-		{
-			return (Vect2D) super.clone();
-		}
-		catch(Exception e){return null;}
+		return new Vect2D(u, v, w);
 	}
 }
 

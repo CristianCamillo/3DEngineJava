@@ -232,7 +232,7 @@ public class MathUtils
 	/* Other functions                                                   */
 	/*********************************************************************/
 	
-	public static Triangle[] clipAgainstPlane(Vect3D planeP, Vect3D normal, Triangle inTri)
+	public static Triangle[] clipAgainstPlane(Vect3D planeP, Vect3D normal, Triangle in)
 	{		
 		Vect3D[] insidePoints = new Vect3D[3];
 		Vect3D[] outsidePoints = new Vect3D[3];
@@ -243,6 +243,8 @@ public class MathUtils
 		Vect2D[] outsideTex = new Vect2D[3];
 		int nInsideTexCount  = 0;
 		int nOutsideTexCount = 0;
+		
+		Triangle inTri = in.clone();
 		
 		float[] d = new float[3];
 		d[0] = distance(inTri.p[0], normal, planeP);
@@ -315,8 +317,8 @@ public class MathUtils
 			p1[0] = insidePoints[1];
 			t1[0] = insideTex[1];
 			
-			p1[1] = p0[2]; // maybe clone
-			t1[1] = t0[2]; // maybe clone
+			p1[1] = p0[2];
+			t1[1] = t0[2];
 			
 			p1[2] = interPlane(planeP, normal, insidePoints[1], outsidePoints[0], tt);
 			t1[2] = new Vect2D(tt[0] * (outsideTex[0].u - insideTex[1].u) + insideTex[1].u,
